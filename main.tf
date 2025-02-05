@@ -48,10 +48,10 @@ module "eks_al2" {
 }
 
 module "iam_eks_role" {
-  source      = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
-  role_name   = "cluster-autoscaler"
-  create_role = true
+  role_name                        = "cluster-autoscaler"
+  create_role                      = true
   attach_cluster_autoscaler_policy = true
   cluster_autoscaler_cluster_names = [module.eks_al2.cluster_name]
   oidc_providers = {

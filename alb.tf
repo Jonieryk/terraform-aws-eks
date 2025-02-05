@@ -6,13 +6,13 @@ resource "helm_release" "aws_lb_controller" {
   values = [yamlencode({
     clusterName = module.eks_al2.cluster_name
     serviceAccount = {
-        create = true
-        name = "aws-load-balancer-controller"
-        annotations = {
-            "eks.amazonaws.com/role-arn" = module.iam_eks_role.iam_role_arn
-        }
+      create = true
+      name   = "aws-load-balancer-controller"
+      annotations = {
+        "eks.amazonaws.com/role-arn" = module.iam_eks_role.iam_role_arn
+      }
     }
   })]
-  
+
 
 }
