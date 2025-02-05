@@ -1,5 +1,5 @@
 locals {
-  name   = "demo-1"
+  name   = "demo-2"
   region = "eu-west-1"
 
   tags = {
