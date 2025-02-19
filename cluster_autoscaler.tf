@@ -30,7 +30,7 @@ resource "helm_release" "cluster_autoscaler" {
   }
   set {
     name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.iam_eks_role.arn
+    value = module.iam_eks_role.iam_role_arn
   }
 }
 module "iam_eks_role" {
