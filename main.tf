@@ -13,7 +13,7 @@ module "eks_al2" {
   version = "~> 20.0"
 
   cluster_name    = "${local.name}-al2"
-  cluster_version = "1.31"
+  cluster_version = "1.32"
 
   cluster_endpoint_public_access = true
 
