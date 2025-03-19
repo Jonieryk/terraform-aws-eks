@@ -52,5 +52,5 @@ module "eks_al2" {
 
 resource "aws_iam_role_policy_attachment" "extra_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-  role       = module.eks_al2.node_groups["node-group"].iam_role_name
+  role       = module.eks_al2.eks_managed_node_groups["node-group"].iam_role_name
 }
