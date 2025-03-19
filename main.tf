@@ -30,8 +30,6 @@ module "eks_al2" {
     aws-ebs-csi-driver     = {}
   }
 
-
-
   vpc_id     = var.vpc_id
   subnet_ids = var.private_subnets
 
@@ -52,3 +50,7 @@ module "eks_al2" {
   tags = local.tags
 }
 
+resource "aws_iam_role_policy_attachment" "extra_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  role       = module.eks_al2.node_groups["node-group"].iam_role_name
+}
