@@ -4,8 +4,17 @@ metadata:
   name: wordpress
   namespace: demo
   annotations:
+    # AWS Load Balancer Controller
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: wordpress
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'  # Use HTTP instead of HTTPS
+    
+    # External DNS - automatyczne dodanie rekordu DNS w Route 53
     external-dns.alpha.kubernetes.io/hostname: wordpress.szkolenie-devops.com
+
 spec:
+  ingressClassName: alb
   rules:
   - host: wordpress.szkolenie-devops.com
     http:
