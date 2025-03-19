@@ -42,6 +42,14 @@ jobs:
     # - name: Terraform Format
     #   run: terraform fmt -check
 
+    # Awaits approavl from the user
+    manual-approval:
+      runs-on: ubuntu-latest
+      environment: production  # Requires manual approval in GitHub UI
+    steps:
+      - name: Approval Required
+        run: echo "Please approve this workflow manually in the Actions tab."
+    
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan -input=false -var-file="demo.tfvars"
