@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_eks_cluster" "eks_al2" {
   depends_on = [module.eks_al2]
   name       = module.eks_al2.cluster_name
@@ -10,7 +12,7 @@ data "aws_eks_cluster_auth" "eks_al2" {
 
 module "eks_al2" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0"
+  version = "~> 20.34"
 
   cluster_name    = "${local.name}-al2"
   cluster_version = "1.32"
@@ -25,8 +27,8 @@ module "eks_al2" {
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
-    aws-ebs-csi-driver     = {}
   }
+
 
 
   vpc_id     = var.vpc_id
@@ -48,3 +50,4 @@ module "eks_al2" {
 
   tags = local.tags
 }
+
