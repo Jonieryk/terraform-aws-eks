@@ -46,7 +46,7 @@ jobs:
     manual-approval:
       runs-on: ubuntu-latest
       environment: production  # Requires manual approval in GitHub UI
-    steps:
+      steps:
       - name: Approval Required
         run: echo "Please approve this workflow manually in the Actions tab."
     
