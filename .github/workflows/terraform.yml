@@ -1,9 +1,9 @@
 name: 'Terraform EC2 deployment'
 
 env:
- AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
- AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
- 
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 on:
   push:
     branches: [ "main" ]
@@ -13,49 +13,72 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  terraform-plan:
+    name: 'Terraform Plan'
     runs-on: ubuntu-latest
     environment: production
 
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
         shell: bash
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v4
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.10.0
+        terraform_version: latest  
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init -force-copy
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    # - name: Terraform Format
-    #   run: terraform fmt -check
-
-    # Awaits approavl from the user
-    manual-approval:
-      runs-on: ubuntu-latest
-      environment: production  # Requires manual approval in GitHub UI
-      steps:
-      - name: Approval Required
-        run: echo "Please approve this workflow manually in the Actions tab."
-    
-    # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan -input=false -var-file="demo.tfvars"
 
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply 
+    - name: Save Plan Output
+      run: terraform plan -input=false -var-file="demo.tfvars" -out=tfplan
+
+    - name: Upload Plan
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: tfplan
+
+  manual-approval:
+    name: 'Manual Approval'
+    runs-on: ubuntu-latest
+    needs: terraform-plan  # Oczekuje na zakończenie Terraform Plan
+    steps:
+    - name: Await Approval
+      run: echo "Please approve this workflow manually in the Actions tab."
+    
+  terraform-apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    needs: manual-approval  # Oczekuje na zatwierdzenie
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: latest  
+
+    - name: Download Plan
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-plan
+        path: .
+
+    - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -input=false -var-file="demo.tfvars" -auto-approve
+      run: terraform apply -input=false -auto-approve tfplan
