@@ -27,7 +27,7 @@ module "eks_al2" {
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
-    aws_ebs_csi_driver     = {}
+    aws-ebs-csi-driver     = {}
   }
 
 
