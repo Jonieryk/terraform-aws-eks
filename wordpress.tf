@@ -1,5 +1,5 @@
 resource "helm_release" "wordpress" {
-  name       = "wordpres"
+  name       = "wordpress"
   namespace  = "demo"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "wordpress"
@@ -18,6 +18,7 @@ resource "kubernetes_manifest" "data-wordpress-mariadb-0" {
       storageClassName = "gp2"
     }
   }
+  depends_on = [ helm_release.wordpress ]
 }
 
 resource "kubernetes_ingress" "wordpress_ingress" {
