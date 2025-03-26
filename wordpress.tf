@@ -22,7 +22,7 @@ values = [<<EOF
       tls: 
         - hosts: 
             - wordpress.szkolenie-devops.com
-        secretName: wordpress-tls
+          secretName: wordpress-tls
     EOF
   ]
 }
