@@ -10,7 +10,7 @@ resource "helm_release" "external_dns" {
       }
     }
     txtOwnerId = module.eks_al2.cluster_name
-    policy = "sync"
+    policy     = "sync"
     serviceAccount = {
       create = true
       annotations = {
@@ -20,9 +20,9 @@ resource "helm_release" "external_dns" {
   })]
 }
 module "external_dns_role" {
-  source                                 = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  role_name                              = "external-dns"
-  attach_external_dns_policy             = true
+  source                     = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  role_name                  = "external-dns"
+  attach_external_dns_policy = true
   oidc_providers = {
     main = {
       provider_arn               = module.eks_al2.oidc_provider_arn
