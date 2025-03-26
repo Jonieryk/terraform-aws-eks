@@ -1,70 +1,27 @@
-# POWERSHELL IMPLEMENTATION 
-#
-# resource "null_resource" "install_wordpress" {
-#   provisioner "local-exec" {
-#     interpreter = ["PowerShell", "-Command"]
-#     command = <<EOT
-#       aws eks --region eu-west-1 update-kubeconfig --name ${module.eks_al2.cluster_name};
-#       if (helm list -n demo | Select-String "wordpress") { 
-#         helm upgrade wordpress bitnami/wordpress -n demo -f values-demo.yaml 
-#       } else { 
-#         helm install wordpress bitnami/wordpress -n demo -f values-demo.yaml --create-namespace 
-#       };
-#       Start-Sleep -Seconds 5;
-#     EOT
-#   }
-#   depends_on = [module.eks_al2]
+resource "helm_release" "wordpress" {
+  name       = "wordpres"
+  namespace  = "demo"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "wordpress"
 
-#   triggers = {
-#     always_run = timestamp()
-#   } 
-# }
-
-# resource "null_resource" "patch_pvc" {
-#   provisioner "local-exec" {
-#     interpreter = ["PowerShell", "-Command"]
-#     command = <<EOT
-#       aws eks --region eu-west-1 update-kubeconfig --name ${module.eks_al2.cluster_name};
-#       kubectl patch pvc data-wordpress-mariadb-0 -n demo --type=merge --patch '{\"spec\":{\"storageClassName\":\"gp2\"}}'
-#     EOT
-#   }
-
-#   depends_on = [null_resource.install_wordpress]
-# }
-
-# BASH IMPLEMENTATION
-resource "null_resource" "install_wordpress" {
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command = <<EOT
-      aws eks --region eu-west-1 update-kubeconfig --name ${module.eks_al2.cluster_name}
-      if helm list -n demo | grep -q "wordpress"; then 
-        helm upgrade wordpress bitnami/wordpress -n demo -f values-demo.yaml
-      else 
-        helm install wordpress bitnami/wordpress -n demo -f values-demo.yaml --create-namespace
-      fi
-      sleep 5
-    EOT
-  }
-  depends_on = [module.eks_al2]
-
-  triggers = {
-    always_run = timestamp()
-  } 
-}
-
-resource "null_resource" "patch_pvc" {
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command = <<EOT
-      aws eks --region eu-west-1 update-kubeconfig --name ${module.eks_al2.cluster_name}
-      kubectl patch pvc data-wordpress-mariadb-0 -n demo --type=merge --patch '{"spec":{"storageClassName":"gp2"}}'
-    EOT
-  }
-
-  triggers = {
-    always_run = timestamp()
-  } 
-
-  depends_on = [null_resource.install_wordpress]
+values = [<<EOF
+    service:
+      type: LoadBalancer
+    ingress:
+      enabled: true
+      ingressClassName: "alb"
+      hostname: "wordpress.example.com"
+      annotations:
+        kubernetes.io/ingress.class: "alb"
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/target-type: ip
+        alb.ingress.kubernetes.io/group.name: wordpress
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'  # Use HTTP instead of HTTPS
+      tls: 
+        - hosts: 
+            - wordpress.szkolenie-devops.com
+        secretName: wordpress-tls
+    EOF
+  ]
 }
