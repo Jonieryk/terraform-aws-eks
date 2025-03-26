@@ -3,6 +3,7 @@ resource "helm_release" "wordpress" {
   namespace  = "demo"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "wordpress"
+  version    = "24.1.18"
 
 values = [<<EOF
     service:
