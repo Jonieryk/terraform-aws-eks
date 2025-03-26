@@ -20,6 +20,24 @@ resource "helm_release" "wordpress" {
 #   }
 # }
 
+resource "null_resource" "patch_pvc" {
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command = <<EOT
+      aws eks --region eu-west-1 update-kubeconfig --name ${module.eks_al2.cluster_name}
+      kubectl patch pvc data-wordpress-mariadb-0 -n demo --type=merge --patch '{"spec":{"storageClassName":"gp2"}}'
+      kubectl patch pvc wordpress -n demo --type=merge --patch '{"spec":{"storageClassName":"gp2"}}'
+    EOT
+  }
+
+  triggers = {
+    always_run = timestamp()
+  } 
+
+  depends_on = [null_resource.install_wordpress]
+}
+
+
 resource "kubernetes_ingress_v1" "wordpress_ingress" {
   metadata {
     name      = "wordpress"
@@ -39,8 +57,12 @@ resource "kubernetes_ingress_v1" "wordpress_ingress" {
       http {
         path {
           backend {
-            service_name = "wordpress"
-            service_port = 80
+            service {
+              name = "wordpress"
+              port {
+                number = 80
+              }
+            }
           }
         }
       }
