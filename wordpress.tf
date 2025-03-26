@@ -6,22 +6,21 @@ resource "helm_release" "wordpress" {
   version    = "23.1.29"
 }
 
-resource "kubernetes_manifest" "data-wordpress-mariadb-0" {
-  manifest = {
-    apiVersion = "v1"
-    kind       = "PersistentVolumeClaim"
-    metadata = {
-      name      = "data-wordpress-mariadb-0"
-      namespace = "demo"
-    }
-    spec = {
-      storageClassName = "gp2"
-    }
-  }
-  depends_on = [ helm_release.wordpress ]
-}
+# resource "kubernetes_manifest" "data-wordpress-mariadb-0" {
+#   manifest = {
+#     apiVersion = "v1"
+#     kind       = "PersistentVolumeClaim"
+#     metadata = {
+#       name      = "data-wordpress-mariadb-0"
+#       namespace = "demo"
+#     }
+#     spec = {
+#       storageClassName = "gp2"
+#     }
+#   }
+# }
 
-resource "kubernetes_ingress" "wordpress_ingress" {
+resource "kubernetes_ingress_v1" "wordpress_ingress" {
   metadata {
     name      = "wordpress"
     namespace = "demo"
