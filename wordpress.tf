@@ -33,8 +33,7 @@ resource "null_resource" "patch_pvc" {
   triggers = {
     always_run = timestamp()
   } 
-
-  depends_on = [null_resource.install_wordpress]
+  
 }
 
 
