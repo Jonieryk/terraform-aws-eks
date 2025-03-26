@@ -5,12 +5,14 @@ resource "helm_release" "external_dns" {
   chart      = "external-dns"
 
   values = [yamlencode({
-    provider = "aws"
+    provider = {
+      aws = {
+      }
+    }
     txtOwnerId = module.eks_al2.cluster_name
     policy = "sync"
     serviceAccount = {
       create = true
-      name   = "external-dns"
       annotations = {
         "eks.amazonaws.com/role-arn" = module.external_dns_role.iam_role_arn
       }
