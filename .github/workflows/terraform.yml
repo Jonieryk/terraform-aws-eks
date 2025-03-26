@@ -73,6 +73,11 @@ jobs:
     - name: Terraform Init
       run: terraform init -force-copy
 
+    - name: helm repo install
+      run: |
+        helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm repo update
+
     - name: Terraform Apply 
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -input=false -var-file="demo.tfvars" -auto-approve
