@@ -13,6 +13,7 @@ resource "helm_release" "aws_lb_controller" {
       }
     }
   })]
+  depends_on = [module.eks_al2]
 }
 
 module "lb_controller_role" {

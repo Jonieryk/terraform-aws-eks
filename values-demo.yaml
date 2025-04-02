@@ -1,9 +1,12 @@
 wordpressUsername: admin
 wordpressPassword: "haslo123"
+global:
+  storageClass: "gp2"
 persistence:
   enabled: true
   storageClass: "gp2"
   size: 10Gi
+
 mariadb:
   enabled: true
   auth:
@@ -11,24 +14,33 @@ mariadb:
     database: wordpress
     username: wordpress
     password: "haslo123"
+  persistence:
+    enabled: true
+    storageClass: "gp2"
+    size: 10Gi
+  primary:
+    persistence:
+      enabled: true
+      storageClass: "gp2"
+      size: 10Gi
 service:
   type: ClusterIP
-ingress:
-  enabled: true
-  ingressClassName: alb
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/group.name: wordpress
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-  rules:
-    - host: wordpress.szkolenie-devops.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: wordpress
-                port:
-                  number: 80
+# ingress:
+#   enabled: true
+#   ingressClassName: alb
+#   annotations:
+#     alb.ingress.kubernetes.io/scheme: internet-facing
+#     alb.ingress.kubernetes.io/target-type: ip
+#     alb.ingress.kubernetes.io/group.name: wordpress
+#     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+#   rules:
+#     - host: wordpress.szkolenie-devops.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: wordpress
+#                 port:
+#                   number: 80

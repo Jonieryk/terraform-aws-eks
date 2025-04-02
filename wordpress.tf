@@ -4,6 +4,10 @@ resource "helm_release" "wordpress" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "wordpress"
   version    = "23.1.29"
+
+  values = [file("values-demo.yaml")]
+
+  depends_on = [kubernetes_namespace.demo, helm_release.aws_lb_controller, helm_release.cluster_autoscaler]
 }
 
 # resource "kubernetes_manifest" "data-wordpress-mariadb-0" {
@@ -20,6 +24,8 @@ resource "helm_release" "wordpress" {
 #   }
 # }
 
+
+/*
 resource "null_resource" "patch_pvc" {
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
@@ -34,7 +40,7 @@ resource "null_resource" "patch_pvc" {
     always_run = timestamp()
   } 
   
-}
+}*/
 
 
 resource "kubernetes_ingress_v1" "wordpress_ingress" {
@@ -67,4 +73,5 @@ resource "kubernetes_ingress_v1" "wordpress_ingress" {
       }
     }
   }
+  depends_on = [kubernetes_namespace.demo]
 }

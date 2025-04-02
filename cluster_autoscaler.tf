@@ -32,6 +32,7 @@ resource "helm_release" "cluster_autoscaler" {
     name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.iam_eks_role.iam_role_arn
   }
+  depends_on = [module.eks_al2]
 }
 module "iam_eks_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
@@ -46,4 +47,5 @@ module "iam_eks_role" {
       namespace_service_accounts = ["kube-system:cluster-autoscaler"]
     }
   }
+
 }
