@@ -5,6 +5,8 @@ resource "helm_release" "argo_cd" {
   chart      = "argo-cd"
   version    = "7.8.26" 
   values     = [file("values-argocd.yaml")]
+
+  depends_on = [ kubernetes_namespace.argocd, helm_release.aws_lb_controller, helm_release.cluster_autoscaler ]
 }
 
 resource "kubernetes_ingress_v1" "argocd_ingress" {
