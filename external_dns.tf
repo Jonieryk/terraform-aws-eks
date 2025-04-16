@@ -18,6 +18,7 @@ resource "helm_release" "external_dns" {
       }
     }
   })]
+  depends_on = [helm_release.aws_lb_controller]
 }
 module "external_dns_role" {
   source                     = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"

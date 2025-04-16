@@ -6,3 +6,6 @@
 
 #ignore state files
 *.tfstate*
+
+#ignore archived files
+*tgz
