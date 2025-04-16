@@ -1,7 +1,17 @@
+global:
+  domain: argocd.szkolenie-devops.com
+
 server:
   ingress:
-    enabled: false
-
+    enabled: true
+    ingressClassName: alb
+    annotations:
+      "alb.ingress.kubernetes.io/scheme": "internet-facing"
+      "alb.ingress.kubernetes.io/target-type": "ip"
+      "alb.ingress.kubernetes.io/group.name": "argocd"
+      "alb.ingress.kubernetes.io/listen-ports": "[{\"HTTP\":80}]"
+      "external-dns.alpha.kubernetes.io/hostname": "argocd.szkolenie-devops.com"
+    # tls: true
   extraArgs:
     - --insecure
 
