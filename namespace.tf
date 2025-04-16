@@ -5,9 +5,9 @@ resource "kubernetes_namespace" "demo" {
   }
 }
 
-resource "kubernetes_namespace" "karpenter" {
+resource "kubernetes_namespace" "argocd" {
   depends_on = [module.eks_al2]
   metadata {
-    name = "karpenter"
+    name = "argocd"
   }
 }
